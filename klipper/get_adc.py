@@ -33,7 +33,7 @@ if __name__ == '__main__':
         avg = 0.0
 
         for _ in range(samples):
-            with open('/home/pi/printer_data/comms/klippy.serial', 'a') as the_file:
+            with open('/home/pi/printer_data/comms/klippy.serial', 'w') as the_file:
                 the_file.write(f'QUERY_ADC NAME="{sensor}"\n')
 
             #find next temp
