@@ -117,45 +117,34 @@ This document tracks identified areas for improvement, ranging from thermal stab
 
 ## 5. Advanced Refinements & Workflow Polish
 
-### [ ] 5.1 Bed Mesh Height Fading (`fade_start` / `fade_end`)
-- **Status**: Pending
-- **Rationale**: `[bed_mesh]` currently has no `fade_end` configured (defaults to `fade_end: 0.0`), applying mesh compensation across the full 200mm print height. This causes continuous Z motor oscillation throughout long prints and prints parts with slanted/warped walls.
-- **Files Affected**: `klipper/printer.cfg`
-- **Action**: Add `fade_start: 1.0`, `fade_end: 10.0`, and `fade_target: 0` to `[bed_mesh]`.
+### [x] 5.1 Bed Mesh Height Fading (`fade_start` / `fade_end`)
+- **Status**: Completed
+- **Rationale**: `[bed_mesh]` previously had no `fade_end` configured (defaulted to `fade_end: 0.0`), applying mesh compensation across the full 200mm print height. This caused continuous Z motor oscillation throughout long prints and slanted/warped walls.
+- **Implementation**: Added `fade_start: 1.0`, `fade_end: 10.0`, and `fade_target: 0` to `[bed_mesh]` in `klipper/printer.cfg`.
 
-### [ ] 5.2 Fix `END_PRINT` Air-Wiping & Safe Part Clearance
-- **Status**: Pending
-- **Rationale**: The Da Vinci wiper scraper moves vertically with the bed. In `END_PRINT`, `G1 Z195` drops the scraper 195mm away before calling `CLEAN_NOZZLE`, so the toolhead wipes back and forth 14 times in empty air at the ceiling of the printer.
-- **Files Affected**: `klipper/macros.cfg`
-- **Action**: Remove `CLEAN_NOZZLE` from `END_PRINT`. Retract 3mm, hop Z slightly (e.g. 5mm) to clear the printed model, park at safe coordinates `(190, 200)`, drop bed to `Z=195`, and disable motors.
+### [-] 5.2 Fix `END_PRINT` Air-Wiping & Safe Part Clearance
+- **Status**: Skipped / Preserved by User Request
+- **Details**: Maintained existing `END_PRINT` sequence without modification.
 
-### [ ] 5.3 `START_PRINT` Standby Nozzle Temp Probing & First Layer Squish Default
-- **Status**: Pending
-- **Rationale**: `START_PRINT` currently commands full nozzle temperature right before `BED_MESH_CALIBRATE ADAPTIVE=1`, causing filament to ooze and drag across the bed while the BLTouch probes. Additionally, `FIRST_LAYER_HEIGHT` defaults to `0.4` (1:1 aspect ratio with a 0.40mm nozzle, giving inadequate bed adhesion).
-- **Files Affected**: `klipper/macros.cfg`
-- **Action**: 
-  1. Pre-heat nozzle to a non-oozing probing temperature (150°C) during adaptive meshing, then heat to full print temp at the safe spot `(190, 200)` before nozzle cleaning.
-  2. Change default `FIRST_LAYER_HEIGHT` parameter from `0.4` to `0.25`.
+### [-] 5.3 `START_PRINT` Standby Nozzle Temp Probing & First Layer Squish Default
+- **Status**: Skipped / Preserved by User Request
+- **Details**: Maintained existing `START_PRINT` heating sequence and layer height defaults without modification.
 
-### [ ] 5.4 Slicer Compatibility: `M600` Filament Change Macro
-- **Status**: Pending
-- **Rationale**: Slicers (PrusaSlicer, OrcaSlicer, Cura) and Fluidd layer-pause events output `M600` for color changes and manual filament swaps. Klipper currently lacks an `M600` macro, triggering an unknown command error.
-- **Files Affected**: `klipper/macros.cfg`
-- **Action**: Add `[gcode_macro M600]` that invokes `PAUSE`.
+### [x] 5.4 Slicer Compatibility: `M600` Filament Change Macro
+- **Status**: Completed
+- **Rationale**: Slicers (PrusaSlicer, OrcaSlicer, Cura) and Fluidd layer-pause events output `M600` for color changes and manual filament swaps.
+- **Implementation**: Added `[gcode_macro M600]` in `klipper/macros.cfg` which forwards to `PAUSE`.
 
-### [ ] 5.5 Bowden Filament Loading / Unloading Macros (`LOAD_FILAMENT` / `UNLOAD_FILAMENT`)
-- **Status**: Pending
-- **Rationale**: The E3D Bowden conversion has a ~500mm PTFE feed path. Manually advancing filament from the extruder drive to the nozzle is tedious and prone to grinding without scripted feeding routines.
-- **Files Affected**: `klipper/macros.cfg`
-- **Action**: Add `LOAD_FILAMENT` (fast feed through Bowden tube, slow purge into nozzle) and `UNLOAD_FILAMENT` (initial tip-forming retract, fast evacuation from tube).
+### [x] 5.5 Bowden Filament Loading / Unloading Macros (`LOAD_FILAMENT` / `UNLOAD_FILAMENT`)
+- **Status**: Completed
+- **Rationale**: The E3D Bowden conversion has a ~500mm PTFE feed path. Manually advancing filament from the extruder drive to the nozzle is tedious.
+- **Implementation**: Added `LOAD_FILAMENT` (fast feed through Bowden tube, slow hotend purge) and `UNLOAD_FILAMENT` (tip-shaping retract, fast evacuation from tube) in `klipper/macros.cfg`.
 
-### [ ] 5.6 Configuration Cleanliness & Client Variable Sync
-- **Status**: Pending
-- **Rationale**: Clean up minor syntax quirks and align Fluidd variables with active hardware features.
-- **Files Affected**: `klipper/printer.cfg`
-- **Action**: 
-  1. Fix trailing space in `[fan ]` -> `[fan]`.
-  2. Remove misleading comment `# is not compatible with screws_tilt_adjust, enable one or the other`.
-  3. Clean up outdated LCD comment `# Not working at this time, buttons do work`.
-  4. In `[gcode_macro _CLIENT_VARIABLE]`: set `variable_speed_hop: 5.0` (matching `max_z_velocity`) and `variable_use_fw_retract: True`.
+### [x] 5.6 Configuration Cleanliness & Client Variable Sync
+- **Status**: Completed
+- **Implementation**: 
+  1. Fixed trailing space in `[fan]` header in `klipper/printer.cfg`.
+  2. Removed obsolete `# is not compatible with screws_tilt_adjust` comment.
+  3. Cleaned up outdated LCD description comment.
+  4. In `[gcode_macro _CLIENT_VARIABLE]`: set `variable_speed_hop: 5.0` (matching `max_z_velocity`) and enabled `variable_use_fw_retract: True`.
 
