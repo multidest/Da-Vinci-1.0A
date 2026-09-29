@@ -148,3 +148,13 @@ This document tracks identified areas for improvement, ranging from thermal stab
   3. Cleaned up outdated LCD description comment.
   4. In `[gcode_macro _CLIENT_VARIABLE]`: set `variable_speed_hop: 5.0` (matching `max_z_velocity`) and enabled `variable_use_fw_retract: True`.
 
+### [x] 5.7 Automated Motion Limits & Acceleration Tuning (`klipper_auto_speed`)
+- **Status**: Completed / Installed
+- **Rationale**: Determining the true physical speed and acceleration limits of the X and Y axes requires detecting step loss under extreme acceleration and speed. Doing this manually via iterative trial-and-error is time-consuming.
+- **Implementation**:
+  1. Installed the `klipper_auto_speed` module on the host Pi and installed `matplotlib` into `~/klippy-env` for graph generation.
+  2. Linked `auto_speed.py` and `autospeed/` into Klipper's `klippy/extras/`.
+  3. Added `[auto_speed]` in `klipper/printer.cfg` configured with `margin: 35` to strictly keep all high-speed moves within the safe print bed ($X \in [35, 190]$, $Y \in [35, 180]$) and away from the rear wiper chute ($X > 190, Y > 190$).
+  4. Set conservative binary search brackets (`accel_min: 500`, `accel_max: 4000`, `velocity_min: 50`, `velocity_max: 250`) tailored for 12V NEMA17 motors and A4988 drivers.
+  5. Added `[update_manager klipper_auto_speed]` to `klipper/moonraker.conf` for Moonraker/Fluidd update tracking.
+
