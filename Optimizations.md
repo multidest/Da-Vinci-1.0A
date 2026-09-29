@@ -169,4 +169,18 @@ This document tracks identified areas for improvement, ranging from thermal stab
     - **Acceleration**: `3142 mm/s²` (configured to `3000 mm/s²` in `[printer]`, a **3× increase** over the previous `1000 mm/s²` baseline)
     - **Velocity**: `196 mm/s` (configured to `195 mm/s` in `[printer]`)
 
+### [x] 5.8 Macro Categorization & UI Button Organization
+- **Status**: Completed
+- **Rationale**: With dozens of macros defined for print control, maintenance, calibration, drying, lighting, and motion tuning, an unorganized macro list clutters the web dashboard.
+- **Implementation**:
+  1. Added dedicated `[gcode_macro]` wrappers in `klipper/macros.cfg` for all `klipper_auto_speed` calibration commands (`AUTO_SPEED_CALIBRATE`, `AUTO_SPEED_VALIDATE_SPEED`, `AUTO_SPEED_FIND_ACCEL`, `AUTO_SPEED_FIND_VELOCITY`, `X_ENDSTOP_ACCURACY_TEST`, `Y_ENDSTOP_ACCURACY_TEST`) with parameter passthrough (`{rawparams}`).
+  2. Organized all macros in Fluidd's Moonraker database into 5 clean, color-coded functional categories:
+     - **Tuning & Calibration**: Full Auto Speed calibration, 10x validation, accel/velocity search, endstop accuracy checks, bed screws tilt, and exercise routines.
+     - **Maintenance & Tools**: Nozzle cleaning chute scrub, fast Bowden load/unload, and filament swap pause (`M600`).
+     - **Filament Dryer**: Preset drying cycles for PLA, PETG, ABS, custom temperature/time drying, status monitor, and emergency stop.
+     - **Chamber & Hardware**: Case light toggle/on/off and beeper tone.
+     - **Print Control**: Pause, resume, and cancel print.
+  3. Set non-user-facing and internal macros (`start_print`, `end_print`, `m100`, `m355`, stepper phase updates) to hidden (`visible: false`) to keep the dashboard focused and clean.
+
+
 
