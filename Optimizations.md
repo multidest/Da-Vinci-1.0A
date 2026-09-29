@@ -149,12 +149,24 @@ This document tracks identified areas for improvement, ranging from thermal stab
   4. In `[gcode_macro _CLIENT_VARIABLE]`: set `variable_speed_hop: 5.0` (matching `max_z_velocity`) and enabled `variable_use_fw_retract: True`.
 
 ### [x] 5.7 Automated Motion Limits & Acceleration Tuning (`klipper_auto_speed`)
-- **Status**: Completed / Installed
+- **Status**: Completed / Calibrated
 - **Rationale**: Determining the true physical speed and acceleration limits of the X and Y axes requires detecting step loss under extreme acceleration and speed. Doing this manually via iterative trial-and-error is time-consuming.
 - **Implementation**:
   1. Installed the `klipper_auto_speed` module on the host Pi and installed `matplotlib` into `~/klippy-env` for graph generation.
   2. Linked `auto_speed.py` and `autospeed/` into Klipper's `klippy/extras/`.
   3. Added `[auto_speed]` in `klipper/printer.cfg` configured with `margin: 35` to strictly keep all high-speed moves within the safe print bed ($X \in [35, 190]$, $Y \in [35, 180]$) and away from the rear wiper chute ($X > 190, Y > 190$).
-  4. Set conservative binary search brackets (`accel_min: 500`, `accel_max: 4000`, `velocity_min: 50`, `velocity_max: 250`) tailored for 12V NEMA17 motors and A4988 drivers.
+  4. Set binary search brackets (`accel_min: 500`, `accel_max: 4000`, `velocity_min: 50`, `velocity_max: 250`) tailored for 12V NEMA17 motors and A4988 drivers.
   5. Added `[update_manager klipper_auto_speed]` to `klipper/moonraker.conf` for Moonraker/Fluidd update tracking.
+  6. **Upstream Bug Fixes Applied**:
+     - *BLTouch virtual endstop compatibility*: Patched `handle_connect` in `autospeed/main.py` to extract rails directly from kinematics when Z uses `probe:z_virtual_endstop` (which bypassed `home_rails_end`).
+     - *Chute Collision Prevention*: Centered opposing axis during 1D tests and added `_ensure_safe_clearance()` in `autospeed/main.py` to move Y forward to bed center ($Y=107.5$) before homing X and after homing Y, avoiding collision with the rear cleaning chute ($X>190, Y>190$).
+     - *Steps-per-mm Metric Fix*: Corrected step difference calculation to divide by `1.0 / stepper.get_step_dist()` ($80.0\text{ steps/mm}$) instead of raw microsteps ($16$), ensuring mathematically exact millimeter readings.
+- **Empirical Calibration Results**:
+  - **Discovered Maximum Limits**:
+    - **X Axis**: Max Accel: `3927 mm/s²`, Max Velocity: `245 mm/s`
+    - **Y Axis**: Max Accel: `3927 mm/s²`, Max Velocity: `245 mm/s`
+  - **Recommended Operational Limits** (20% safety margin / 0.8 derate):
+    - **Acceleration**: `3142 mm/s²` (configured to `3000 mm/s²` in `[printer]`, a **3× increase** over the previous `1000 mm/s²` baseline)
+    - **Velocity**: `196 mm/s` (configured to `195 mm/s` in `[printer]`)
+
 
