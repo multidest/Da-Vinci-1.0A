@@ -177,7 +177,7 @@ This document tracks identified areas for improvement, ranging from thermal stab
   2. Organized all macros in Fluidd's Moonraker database into 5 clean, color-coded functional categories:
      - **Tuning & Calibration**: Full Auto Speed calibration, 10x validation, accel/velocity search, endstop accuracy checks, bed screws tilt, and exercise routines.
      - **Maintenance & Tools**: Nozzle cleaning chute scrub, fast Bowden load/unload, and filament swap pause (`M600`).
-     - **Filament Dryer**: Preset drying cycles for PLA, PETG, ABS, custom temperature/time drying, status monitor, and emergency stop.
+     - **Filament Dryer**: Bed drop macro (`DRYER_DROP_BED` / `DROP_BED`) to load spools, preset drying cycles for PLA, PETG, ABS, custom temperature/time drying, status monitor, and emergency stop.
      - **Chamber & Hardware**: Case light toggle/on/off and beeper tone.
      - **Print Control**: Pause, resume, and cancel print.
   3. Set non-user-facing and internal macros (`start_print`, `end_print`, `m100`, `m355`, stepper phase updates) to hidden (`visible: false`) to keep the dashboard focused and clean.
