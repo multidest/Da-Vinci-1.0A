@@ -14,7 +14,7 @@ This document tracks identified areas for improvement, ranging from thermal stab
   - **Details**: Changed `min_temp` from `-50` (extruder) and `-100` (bed) to `0` in `klipper/printer.cfg`. Protects against runaway heating in the event of broken thermistor wiring.
 - [x] **0.2 Bed Thermal Runaway Detection**
   - **Status**: Completed
-  - **Details**: Reduced `check_gain_time` on `[verify_heater heater_bed]` from `5000` (~83 minutes) to `150` seconds.
+  - **Details**: Configured `[verify_heater heater_bed]` with `check_gain_time: 180`, `heating_gain: 1`, `max_error: 360`, and `hysteresis: 8`. Prevents premature heater fault shutdowns caused by watermark temperature swings, drafts, or cooling fan startup while maintaining reliable runaway safety.
 - [x] **0.3 LCD 1604 Display Geometry**
   - **Status**: Completed
   - **Details**: Uncommented `line_length: 16` in `[display]` to ensure proper line wrapping and screen buffer alignment on the 16x4 character display.
