@@ -182,5 +182,25 @@ This document tracks identified areas for improvement, ranging from thermal stab
      - **Print Control**: Pause, resume, and cancel print.
   3. Set non-user-facing and internal macros (`start_print`, `end_print`, `m100`, `m355`, stepper phase updates) to hidden (`visible: false`) to keep the dashboard focused and clean.
 
+### [x] 5.10 Front Panel Button Responsiveness Fix & Home Button Repurposing
+- **Status**: Completed
+- **Rationale**: The Da Vinci 1.0A front panel navigation buttons (Up, Down, Left, OK) were intermittently unresponsive or required multiple taps to register. Additionally, the physical Home button was mapped to `kill_pin`, causing accidental emergency shutdowns if pressed.
+- **Root Cause**:
+  1. **Missing Pull-up and Inversion (`^!`)**: The front panel buttons short to GND when pressed. Without pull-up and inversion configured in `[display]`, the SAM3X8E inputs floated/read HIGH (1 = unpressed). Klipper's `MCU_buttons` initialized assuming 0 = unpressed, causing it to read `0x3F` on boot and perceive every button as already held down.
+  2. **Short-Click Timeout**: For `click_pin` (OK), Klipper's 800 ms short-click timer started immediately upon boot. Once expired, `is_short_click` became False; subsequent user presses were ignored unless rapidly double-tapped within the timer window. Navigation buttons also triggered on release rather than press.
+  3. **Accidental Shutdowns**: `kill_pin` on `PA28` instantly halted the printer with `MCU 'mcu' shutdown: Shutdown due to kill button`.
+- **Implementation**:
+  1. **Pull-Up & Invert Pin Definitions (`klipper/printer.cfg`)**:
+     - Configured `up_pin: ^!PC19`, `down_pin: ^!PC29`, `back_pin: ^!PA26`, and `click_pin: ^!PA27`.
+     - Pins now idle at 0 (unpressed) and cleanly transition to 1 (pressed) when depressed.
+  2. **Increased Long-Press Duration (`klippy/extras/display/menu_keys.py`)**:
+     - Increased `LONG_PRESS_DURATION` from `0.800` s to `1.500` s so deliberate/firm presses do not prematurely trigger long-press actions.
+  3. **Repurposed Home Button (`klipper/printer.cfg` & `klipper/macros.cfg`)**:
+     - Removed `kill_pin: ^!PA28` from `[display]`.
+     - Added `[gcode_button home_button]` listening on `pin: ^!PA28` with `press_gcode: HOME_BUTTON`.
+     - Defined `[gcode_macro HOME_BUTTON]` to safely perform homing (`G28`) when idle, while ignoring with an informative alert during printing to protect active jobs.
+
+
+
 
 
