@@ -219,6 +219,19 @@ This document tracks identified areas for improvement, ranging from thermal stab
      - **Live Adjustment Feedback**: Displays real-time screw status (`Rear R: Base`, `Rear L: CW 01:10` / `Level`, `Front: CCW 00:20` / `Level`), and overall bed condition (`Status: Level!` vs `Needs Adjusting`).
      - **Rapid Iteration**: Clicking any screw row or the status line immediately re-probes the bed after physical knob adjustment without needing menu re-navigation.
 
+### [x] 5.12 Manual Extrusion Controls & Button Macro Anti-Queueing
+- **Status**: Completed
+- **Rationale**: Rapidly pressing menu or hardware buttons previously queued multiple executions of long-running macros (e.g. multiple 450 mm filament feeds). Additionally, fine manual filament control was needed on the screen for small purges or nozzle adjustments.
+- **Implementation**:
+  1. **Manual Extrusion Controls (`[display_menu.cfg]` & `[macros.cfg]`)**:
+     - Added `[gcode_macro MANUAL_EXTRUDE]` with cold-extrusion safety protection checking `printer.extruder.can_extrude`.
+     - Direct 1-click buttons in the Filament menu: `Extrude 10mm` (F200) and `Retract 10mm` (F300).
+     - Interactive dial `Manual E: +/-10mm` (5 mm increments from -100 mm to +100 mm) to dial exact custom feed or retract amounts.
+  2. **Single-Execution Button Anti-Queueing (`klippy/extras/display/menu.py` & `klippy/extras/gcode_button.py`)**:
+     - Prevented `queue_gcode()` from stacking duplicate commands in `self.gcode_queue` when rapid button presses occur while a macro or command is actively executing.
+     - Enforced a single-macro-at-a-time rule while prioritizing canceling/stopping commands (`CANCEL_PRINT`, `STOP_DRYER`, `PAUSE`, `M112`) so emergency actions always purge pending commands and take immediate effect.
+
+
 
 
 
