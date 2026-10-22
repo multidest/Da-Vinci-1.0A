@@ -212,7 +212,13 @@ This document tracks identified areas for improvement, ranging from thermal stab
   2. **Dedicated Drying Section (`Drying >`)**:
      - Grouped under the Filament menu: `Drop Bed` (`DRYER_DROP_BED`), `Dry PLA (50C)`, `Dry PETG (65C)`, `Dry ABS (70C)`, `Dryer Status`, and `Stop Dryer`.
   3. **Top-Level Macros Menu (`[menu __main __macros]`)**:
-     - Placed at index 3 on the Main menu for quick access to hardware toggles and chores: Case Light toggle with dynamic state (`ON`/`OFF`), `Screws Tilt` bed leveling check, `Clean Nozzle`, and `Exercise Axes`.
+     - Placed at index 3 on the Main menu for quick access to hardware toggles and chores: Case Light toggle with dynamic state (`ON`/`OFF`), `Clean Nozzle`, and `Exercise Axes`.
+  4. **Dedicated Bed Screws Tilt Menu (`[menu __main __screws_tilt]`)**:
+     - Placed at index 4 on the Main menu for direct 1-click access.
+     - **`Measure Tilt`**: Automatically homes axes only if unhomed, probes all 3 bed screws, and calculates level deviations.
+     - **Live Adjustment Feedback**: Displays real-time screw status (`Rear R: Base`, `Rear L: CW 01:10` / `Level`, `Front: CCW 00:20` / `Level`), and overall bed condition (`Status: Level!` vs `Needs Adjusting`).
+     - **Rapid Iteration**: Clicking any screw row or the status line immediately re-probes the bed after physical knob adjustment without needing menu re-navigation.
+
 
 
 
