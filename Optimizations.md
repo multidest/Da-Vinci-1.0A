@@ -200,6 +200,21 @@ This document tracks identified areas for improvement, ranging from thermal stab
      - Added `[gcode_button home_button]` listening on `pin: ^!PA28` with `press_gcode: HOME_BUTTON`.
      - Defined `[gcode_macro HOME_BUTTON]` to safely perform homing (`G28`) when idle, while ignoring with an informative alert during printing to protect active jobs.
 
+### [x] 5.11 Custom Winstar 1604 Display Menus (`[display_menu.cfg]`)
+- **Status**: Completed
+- **Rationale**: The stock Klipper display menu lacks awareness of custom Da Vinci macros, filament cartridge EEPROM tracking, and on-board spool drying routines. By restructuring the display menu into a dedicated config file, all operations can be monitored and managed directly from the front panel without requiring a computer or web UI.
+- **Implementation**:
+  1. **Filament Menu Customization (`[menu __main __filament]`)**:
+     - **Disabled raw extrusion commands** (`loadf`, `loads`, `unloadf`, `unloads`, `feed`) that bypass thermal and safety limits.
+     - **Live Cartridge Stats**: Display live Material, Color, Remaining Length, Used Length, and recommended print temperatures read directly from `printer.xyz_cartridge`. Clicking stat lines re-polls the chip via `CARTRIDGE_READ`.
+     - **Set Cartridge Submenu (`Set Cartridge >`)**: Allows setting both Material Type (`PLA`, `PETG`, `ABS`, `TPU`) and Remaining Length (5m to 400m in 10m steps) using interactive input dials, with a `Save to Chip` command that commits both values directly to the EEPROM with confirmation beeps (`SAVE_CARTRIDGE_SETUP`).
+     - **Safe Operations**: Direct buttons for `LOAD_FILAMENT`, `UNLOAD_FILAMENT`, and `CLEAN_NOZZLE`.
+  2. **Dedicated Drying Section (`Drying >`)**:
+     - Grouped under the Filament menu: `Drop Bed` (`DRYER_DROP_BED`), `Dry PLA (50C)`, `Dry PETG (65C)`, `Dry ABS (70C)`, `Dryer Status`, and `Stop Dryer`.
+  3. **Top-Level Macros Menu (`[menu __main __macros]`)**:
+     - Placed at index 3 on the Main menu for quick access to hardware toggles and chores: Case Light toggle with dynamic state (`ON`/`OFF`), `Screws Tilt` bed leveling check, `Clean Nozzle`, and `Exercise Axes`.
+
+
 
 
 
