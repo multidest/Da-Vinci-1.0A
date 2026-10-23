@@ -231,6 +231,21 @@ This document tracks identified areas for improvement, ranging from thermal stab
      - Prevented `queue_gcode()` from stacking duplicate commands in `self.gcode_queue` when rapid button presses occur while a macro or command is actively executing.
      - Enforced a single-macro-at-a-time rule while prioritizing canceling/stopping commands (`CANCEL_PRINT`, `STOP_DRYER`, `PAUSE`, `M112`) so emergency actions always purge pending commands and take immediate effect.
 
+### [x] 5.13 Direct On-Screen Print Controls (Pause, Resume, Cancel)
+- **Status**: Completed
+- **Rationale**: Stock Klipper displays an `OctoPrint` submenu during active prints with "Pause printing" and "Abort printing". However, in Fluidd/Moonraker setups, these send dummy serial action strings (`action:pause`, `action:cancel`) which are ignored by Moonraker and fail to execute. Furthermore, testing `gcode_mutex` during active `virtual_sdcard` execution erroneously dropped incoming display commands.
+- **Implementation**:
+  1. **Direct Main Menu Controls (`[display_menu.cfg]`)**:
+     - Disabled the non-functional stock `[menu __main __octoprint]` menu.
+     - Added prominent, direct top-level commands visible whenever a print is active:
+       - `Pause Print` (index 1 when running) -> invokes real `PAUSE`.
+       - `Resume Print` (index 1 when paused) -> invokes real `RESUME`.
+       - `Cancel Print` (index 2) -> invokes real `CANCEL_PRINT`.
+     - Mirrored these controls inside `[menu __main __tune]` for direct access alongside speed and baby-stepping tuning.
+  2. **Active Print Action Dispatch Fix (`klippy/extras/display/menu.py` & `klippy/extras/gcode_button.py`)**:
+     - Refined queue guard logic to only check active menu execution (`self.is_executing` and `self.gcode_queue`) rather than `gcode_mutex.test()`, allowing `virtual_sdcard` prints to yield and dispatch user pause/cancel commands smoothly.
+
+
 
 
 
