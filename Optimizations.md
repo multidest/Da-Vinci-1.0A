@@ -282,6 +282,26 @@ This document tracks identified areas for improvement, ranging from thermal stab
   3. **Dashboard Integration**:
      - Standardized macros under the `CARTRIDGE_` prefix for native grouping into dedicated Fluidd dashboard panels.
 
+### [x] 5.17 OrcaSlicer First-Layer Parity with Cura & Machine Limit Synchronization
+- **Status**: Completed
+- **Rationale**: Initial layer brims in OrcaSlicer exhibited severe under-extrusion, wavy paths, and disconnected passes. Investigation revealed that OrcaSlicer's default Klipper presets commanded the first layer brim at 105 mm/s (`F6300`) with a razor-thin 0.20 mm layer height and 4.5 mm Bowden retraction, whereas Cura printed the first layer at 30 mm/s with a beefy 0.30 mm layer height (providing 50% more molten plastic volume for squish) and 3.5 mm retraction.
+- **Implementation**:
+  1. **First-Layer Process Presets (`fdm_process_klipper_common.json` & `@MyKlipper` presets)**:
+     - Set `initial_layer_print_height: 0.3` (matching Cura's 0.30 mm first layer height).
+     - Set `initial_layer_line_width: 0.5` (providing 125% line squish for a 0.4 mm nozzle).
+     - Reduced `initial_layer_speed` to `25 mm/s` (was 50 mm/s).
+     - Reduced `initial_layer_infill_speed` (brim speed) to `30 mm/s` (was 105 mm/s / `F6300`).
+     - Aligned print accelerations: `default_acceleration: 3000`, `travel_acceleration: 3000`, `initial_layer_acceleration: 500`.
+     - Capped travel speed to `180 mm/s` (matching Klipper's 195 mm/s velocity limit).
+  2. **Machine Profile Limits (`XYZ DaVinci 1.0a Klipper.json` & `fdm_klipper_common.json`)**:
+     - Configured max speeds: X/Y `195 mm/s`, Z `5 mm/s`, E `60 mm/s`.
+     - Configured max accelerations: X/Y/E `3000 mm/s²`, Z `100 mm/s²`.
+     - Configured Bowden retraction: length `3.5 mm`, retract speed `40 mm/s`, deretract speed `35 mm/s`, Z-hop `0.2 mm` (matching Klipper `[firmware_retraction]`).
+  3. **Filament Profiles (`XYZprinting ABS`, `MG Chemicals Navy ABS`, `XYZprinting PLA`)**:
+     - Standardized retraction length to `3.5 mm` at `40 mm/s` retract / `35 mm/s` deretract.
+     - Preserved `filament_flow_ratio: 1.01` (matching Cura's 101% flow).
+
+
 
 
 
