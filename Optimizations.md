@@ -255,6 +255,19 @@ This document tracks identified areas for improvement, ranging from thermal stab
   4. **Calibration Clean-Up**: Removed non-functional delta printer calibrations (`Delta cal. auto`, `Delta cal. man`) and added direct shortcuts for **`Calib Probe Z`** (`PROBE_CALIBRATE`) and **`Bed Mesh Calib`** (`BED_MESH_CALIBRATE`).
   5. **Modernized Virtual Storage Label**: Renamed legacy `SD Card` menu to `Print Files`.
 
+### [x] 5.15 Preserving Stepper Energization & Coordinates During Print Pause
+- **Status**: Completed
+- **Rationale**: By default, Klipper's built-in `[idle_timeout]` runs `M84` after 10 minutes of inactivity. When a print was paused, this timeout would fire, de-energizing the X, Y, and Z stepper motors. Once steppers lost holding torque, printer axes could drift and Klipper marked the machine as unhomed, requiring a full rehome and effectively ruining the in-progress print.
+- **Implementation**:
+  1. **Conditional `[idle_timeout]` in `printer.cfg`**:
+     - Configured a dedicated `[idle_timeout]` section that checks `{% if printer.pause_resume.is_paused %}`.
+     - When paused, only the hotend heater is shut down (`M104 S0`) to prevent filament cooking and heat creep, while `M84` is intentionally omitted so all steppers remain energized and positional lock is 100% maintained.
+     - When truly idle (not paused/printing), `TURN_OFF_HEATERS` and `M84` disable motors normally after 30 minutes.
+  2. **Pause Timeout Window via `[gcode_macro _CLIENT_VARIABLE]`**:
+     - Configured `variable_idle_timeout: 43200` (12 hours) so Fluidd automatically extends the idle timer window upon pausing.
+  3. **Automatic Reheat on Resume**:
+     - Fluidd's `RESUME` macro automatically checks `last_extruder_temp`, reheats the hotend with `M109`, unretracts, restores the baseline idle timeout, and returns to the exact layer coordinates without requiring any homing.
+
 
 
 
