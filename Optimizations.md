@@ -268,6 +268,20 @@ This document tracks identified areas for improvement, ranging from thermal stab
   3. **Automatic Reheat on Resume**:
      - Fluidd's `RESUME` macro automatically checks `last_extruder_temp`, reheats the hotend with `M109`, unretracts, restores the baseline idle timeout, and returns to the exact layer coordinates without requiring any homing.
 
+### [x] 5.16 Interactive Fluidd Modal & Visual Console Card for Filament Cartridge
+- **Status**: Completed
+- **Rationale**: The printer's UNI/O filament cartridge EEPROM tracks remaining length, material type, color, and preheat presets. Previously, interacting with the cartridge required CLI commands or manual G-code. A graphical, interactive interface inside Fluidd gives the user a dedicated management UI similar to bed screw leveling.
+- **Implementation**:
+  1. **Interactive Dialog Modal (`action:prompt`)**:
+     - Implemented `CARTRIDGE_PANEL` (and `CARTRIDGE_STATUS`) using Klipper/Fluidd's `action:prompt` modal protocol.
+     - Displays live status: material, color, remaining meters, percentage gauge, used meters (lifetime and this print), and target temperatures.
+     - Provides one-click action buttons: `[Preheat Spool]`, `[Reset PLA (200m)]`, `[Reset ABS (200m)]`, `[Reset PETG (200m)]`, and `[Sync to Chip Now]`.
+     - Handles unformatted and undetected states with interactive formatting buttons.
+  2. **Visual Console Card**:
+     - Running `CARTRIDGE_STATUS` prints a formatted box-drawing card with a dynamic ASCII fill bar (`[███████████████████░] 94.3%`) directly into Fluidd's console.
+  3. **Dashboard Integration**:
+     - Standardized macros under the `CARTRIDGE_` prefix for native grouping into dedicated Fluidd dashboard panels.
+
 
 
 
