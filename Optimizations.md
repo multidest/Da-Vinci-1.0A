@@ -245,6 +245,17 @@ This document tracks identified areas for improvement, ranging from thermal stab
   2. **Active Print Action Dispatch Fix (`klippy/extras/display/menu.py` & `klippy/extras/gcode_button.py`)**:
      - Refined queue guard logic to only check active menu execution (`self.is_executing` and `self.gcode_queue`) rather than `gcode_mutex.test()`, allowing `virtual_sdcard` prints to yield and dispatch user pause/cancel commands smoothly.
 
+### [x] 5.14 Legacy Display Menu Overrides & Enhancements
+- **Status**: Completed
+- **Rationale**: Clean up legacy defaults, fix pin naming mismatches, and add missing modern presets in Klipper's stock display menu.
+- **Implementation**:
+  1. **Fixed Case Light in `Control` Menu**: Mapped `[output_pin Case_Light]` to `Lights: ON / OFF` (fixing previous invisibility caused by case mismatch `caselight`) and disabled non-functional PWM slider.
+  2. **Tactile Baby-Stepping (`Tune > Offset Z`)**: Increased step size from `0.005 mm` to `0.01 mm` so live first-layer adjustments are responsive with push buttons.
+  3. **Temperature Preheats**: Added **Preheat PETG** (230°C / 70°C) and **Preheat Spool** (dynamic 1-click preheat to active cartridge temperatures).
+  4. **Calibration Clean-Up**: Removed non-functional delta printer calibrations (`Delta cal. auto`, `Delta cal. man`) and added direct shortcuts for **`Calib Probe Z`** (`PROBE_CALIBRATE`) and **`Bed Mesh Calib`** (`BED_MESH_CALIBRATE`).
+  5. **Modernized Virtual Storage Label**: Renamed legacy `SD Card` menu to `Print Files`.
+
+
 
 
 
