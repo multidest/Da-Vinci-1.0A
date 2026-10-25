@@ -226,7 +226,7 @@ To ensure reliable first layers on the magnetic PEI plate:
 | **Initial Layer Print Speed** | **`25 mm/s`** | Gives molten plastic sufficient dwell time to bond to the PEI sheet. |
 | **Initial Layer Infill/Brim Speed** | **`30 mm/s`** | Prevents high-speed dragging and wavy lines on brims. |
 | **First Layer Acceleration** | **`500 mm/s²`** | Gentle acceleration preventing corners from peeling up during laying. |
-| **Filament Flow Ratio** | **`1.01` (101%)** | Matches proven Cura extrusion volume. |
+| **Filament Flow Ratio** | **`0.98` (98%)** | Calibrated via OrcaSlicer Archimedean chords YOLO test (-0.03 offset from 1.01). |
 
 ---
 
@@ -323,4 +323,6 @@ A chronological log of all completed engineering enhancements, safety hardening,
 * **[x] 5.17 OrcaSlicer First-Layer Parity with Cura:** Aligned OrcaSlicer presets with Cura standards (0.30mm layer height, 0.50mm line width, 25–30mm/s first-layer speed, 3.5mm retraction) to eliminate thin, wavy, and disconnected brims.
 * **[x] 5.18 Bed Thermistor ADC Noise Filtering & Watchdog Tuning:** Increased bed `smooth_time` to 8.0s to filter out mainboard ground bounce and electrical ADC noise; tuned `check_gain_time` to 200s to accommodate magnetic PEI bed thermal lag in cold weather.
 * **[x] 5.19 Empirical Pressure Advance Calibration (0.31):** Calibrated using OrcaSlicer's PA Tower on the E3D V6 Bowden setup. Identified optimal corners at height $15\text{–}16\,\text{mm}$ ($\text{PA} = 0.31$); synchronized across Klipper's `[extruder]` and OrcaSlicer ABS filament profiles.
+* **[x] 5.20 Empirical Flow Ratio Calibration (0.98):** Calibrated using OrcaSlicer's Archimedean Chords YOLO test. Identified optimal top-surface finish at $-0.03$ offset from baseline ($1.01 \times 0.97 \approx 0.98$); updated across OrcaSlicer ABS filament profiles to eliminate micro-ridging and top-surface roughness.
+
 
