@@ -116,7 +116,7 @@ square_corner_velocity: 5.0
 * **Nozzle:** 0.40 mm standard brass nozzle.
 * **Feed Path:** Bowden feeder with a $\sim 500\,\text{mm}$ PTFE guide tube from the rear chassis bracket.
 * **Retraction Baseline:** `3.5 mm` length at `40 mm/s` retract and `35 mm/s` unretract.
-* **Pressure Advance:** Calibrated baseline in Klipper is `0.20` (typical ABS range: `0.25` to `0.45` depending on speed).
+* **Pressure Advance:** Calibrated baseline in Klipper is `0.31` (tuned via OrcaSlicer PA Tower for ABS).
 * **Max Volumetric Speed:** Safe operational ceiling is **`13.0 mm³/s`** for ABS at 245 °C.
 
 ### 5.2 Heated Bed & Magnetic PEI Surface
@@ -322,3 +322,5 @@ A chronological log of all completed engineering enhancements, safety hardening,
 * **[x] 5.16 Interactive Fluidd Modal for Filament Cartridge:** Implemented `CARTRIDGE_PANEL` dialog modal and `CARTRIDGE_STATUS` visual console cards.
 * **[x] 5.17 OrcaSlicer First-Layer Parity with Cura:** Aligned OrcaSlicer presets with Cura standards (0.30mm layer height, 0.50mm line width, 25–30mm/s first-layer speed, 3.5mm retraction) to eliminate thin, wavy, and disconnected brims.
 * **[x] 5.18 Bed Thermistor ADC Noise Filtering & Watchdog Tuning:** Increased bed `smooth_time` to 8.0s to filter out mainboard ground bounce and electrical ADC noise; tuned `check_gain_time` to 200s to accommodate magnetic PEI bed thermal lag in cold weather.
+* **[x] 5.19 Empirical Pressure Advance Calibration (0.31):** Calibrated using OrcaSlicer's PA Tower on the E3D V6 Bowden setup. Identified optimal corners at height $15\text{–}16\,\text{mm}$ ($\text{PA} = 0.31$); synchronized across Klipper's `[extruder]` and OrcaSlicer ABS filament profiles.
+
