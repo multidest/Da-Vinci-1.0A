@@ -301,6 +301,18 @@ This document tracks identified areas for improvement, ranging from thermal stab
      - Standardized retraction length to `3.5 mm` at `40 mm/s` retract / `35 mm/s` deretract.
      - Preserved `filament_flow_ratio: 1.01` (matching Cura's 101% flow).
 
+### [x] 5.18 Bed Thermistor ADC Noise Filtering & Watchdog Tuning
+- **Status**: Completed
+- **Rationale**: The Da Vinci 1.0A motherboard uses an unusual analog measurement topology with an external 4.096V reference. High current switching from the bed heater MOSFET (`PB16`) under watermark control generates supply voltage droop and ground bounce, creating brief transient temperature dips and spikes on the ADC input (`PB21`). In cold ambient temperatures, combined with the thermal lag of the magnetic steel PEI plate, these dips could trip Klipper's `verify_heater` watchdog.
+- **Implementation**:
+  1. **Low-Pass Moving Average Filtering (`klipper/printer.cfg`)**:
+     - Increased `smooth_time` from `2.0` s to `8.0` s in `[heater_bed]`.
+     - Effectively dampens instantaneous electrical noise and voltage fluctuations on the ADC line without introducing perceptible control lag on the high-thermal-mass bed.
+  2. **Thermal Watchdog Time Window (`klipper/printer.cfg`)**:
+     - Adjusted `check_gain_time` from `180` s to `200` s in `[verify_heater heater_bed]`.
+     - Accommodates slower warming rates through the magnetic rubber barrier in cold rooms while preserving full runaway safety.
+
+
 
 
 
